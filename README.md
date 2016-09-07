@@ -12,6 +12,10 @@ The data is open data provided by [HSL](http://dev.hsl.fi/).
     npm install
     npm start / npm run watch
 
+## Sponsored by Reaktor
+
+Thank you [Reaktor](https://reaktor.com/careers/) for letting me use some of my working hours on open-source development.
+
 ## Licence
 
 The MIT License (MIT)
