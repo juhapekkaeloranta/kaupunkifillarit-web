@@ -4,7 +4,7 @@
   "description": "Kaupunkifillarit.fi backend and web frontend",
   "main": "app.js",
   "repository": "https://gitlab.com/kaupunkifillarit/kaupunkifillarit",
-  "license": "LicenseRef-LICENSE",
+  "license": "MIT",
   "scripts": {
     "start": "babel-node app.js --presets es2015",
     "watch": "./node_modules/.bin/nodemon app.js --exec babel-node --presets es2015"
