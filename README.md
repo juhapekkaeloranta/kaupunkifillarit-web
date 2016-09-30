@@ -1,6 +1,7 @@
 # [Kaupunkifillarit.fi](https://kaupunkifillarit.fi) - backend and website
 
-[Download Kaupunkifillarit for iOS for free.](https://itunes.apple.com/app/kaupunkifillarit.fi/id1111297620?mt=8)
+[Download for iOS.](https://itunes.apple.com/app/kaupunkifillarit.fi/id1111297620?mt=8)
+[Download for Android.](https://play.google.com/store/apps/details?id=fi.kaupunkifillarit)
 
 Citybikes rolled to the streets of Helsinki in the summer of 2016. They gained popularity quickly.
 
