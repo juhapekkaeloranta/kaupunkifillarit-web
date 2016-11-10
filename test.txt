@@ -1,0 +1,43 @@
+import _ from 'lodash'
+import express from 'express'
+import compress from 'compression'
+import Lokka from 'lokka'
+import Transport from 'lokka-transport-http'
+import {MongoClient} from 'mongodb'
+
+var stationCache = null
+var database = null
+
+const HSL_GRAPHQL_URL = 'https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql'
+const app = express()
+const graphQLClient = new Lokka({
+  transport: new Transport(HSL_GRAPHQL_URL)
+})
+const fs = require('fs');
+const Type = require('type-of-is');
+
+
+
+var request = require("request")
+
+var url = "http://dev.hsl.fi/tmp/citybikes/stations_20161003T090101Z"
+
+request({
+    url: url,
+    json: true
+}, function (error, response, body) {
+
+    if (!error && response.statusCode === 200) {
+        var stationIndexArray = (Object.keys(body['result'])); // Print the json response
+        var stationObjectArray = [];
+        stationIndexArray.forEach(function(value) {
+          //console.log(body['result'][value])
+          stationObjectArray.push(body['result'][value]);
+        });
+        var stationObjectQueryTypeArray = {};
+        stationObjectArray.forEach(function(stationObject) {
+          
+
+        });
+    }
+})

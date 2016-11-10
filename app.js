@@ -1,3 +1,5 @@
+//var express = require("express");
+
 import _ from 'lodash'
 import express from 'express'
 import compress from 'compression'
@@ -13,6 +15,9 @@ const app = express()
 const graphQLClient = new Lokka({
   transport: new Transport(HSL_GRAPHQL_URL)
 })
+var request = require("request")
+
+var index = 1
 
 app.disable('x-powered-by')
 app.use(compress())
@@ -37,6 +42,7 @@ function refreshStationCache() {
     }
   `).then(result => {
     stationCache = result
+    console.log(stationCache)
   })
 }
 
@@ -67,11 +73,63 @@ function startStationSaving() {
   }
 }
 
-const port = process.env.PORT || 3000
+/**
+*
+* params: date YYYYMMDD, time HHMMSS
+*/
+function getOldStationInfo() {
+  var datetime = new Date("2016-10-04T19:01:01")
+  var dateString = datetime.getUTCFullYear() +''+(datetime.getUTCMonth()+1)+'0'+datetime.getUTCDate()
+  datetime.setUTCMinutes(datetime.getUTCMinutes() + index*10)
+  var timeString = datetime.getUTCHours()+''+datetime.getUTCMinutes()+'01'
+  index = index + 1
+  var urlDate = dateString + 'T' + timeString + 'Z'
+  var url = "http://dev.hsl.fi/tmp/citybikes/stations_"+urlDate
+  console.log(url)
+  request({
+      url: url,
+      json: true
+  }, function (error, response, body) {
+      if (!error && response.statusCode === 200) {
+          var stationIndexArray = (Object.keys(body['result'])); // Print the json response
+          var stationObjectArray = [];
+          stationIndexArray.forEach(function(value) {
+            //console.log(body['result'][value])
+            stationObjectArray.push(body['result'][value]);
+          });
+          var stationObjectQueryTypeArray = [];
+          stationObjectArray.forEach(function(stationObject) {
+            var stationObjectQueryType =(
+              {id: stationObject['name'],
+              name: stationObject['name'].substring(4),
+              lat: parseFloat(stationObject['coordinates'].split(",")[0]),
+              lon: parseFloat(stationObject['coordinates'].split(",")[1]),
+              bikesAvailable: stationObject['avl_bikes'],
+              spacesAvailable: stationObject['free_slots']}
+            );
+            stationObjectQueryTypeArray.push(stationObjectQueryType)
+          });
+          var result = {bikeRentalStations: stationObjectQueryTypeArray}
+          stationCache = result;
+      }
+  })
+}
+
+function testObjectStuff() {
+  var a = "60.155411,24.950391";
+  var lat = a.split(",")[0];
+  console.log('lat:'+lat)
+
+}
+
+const port = process.env.PORT || 3001
 app.listen(port, () => {
   console.log(`Kaupunkifillarit.fi listening on *:${port}`)
-  setInterval(refreshStationCache, 10 * 1000)
-  refreshStationCache()
-  startStationSaving()
-})
+  //setInterval(refreshStationCache, 10 * 1000)
+  //refreshStationCache()
+  //startStationSaving()
+  getOldStationInfo()
 
+  //setInterval(getOldStationInfo, 2000)
+  //testObjectStuff()
+})
