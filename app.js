@@ -78,13 +78,14 @@ function startStationSaving() {
 * params: date YYYYMMDD, time HHMMSS
 */
 function getOldStationInfo() {
-  var datetime = new Date("2016-10-04T19:01:01")
-  var dateString = datetime.getUTCFullYear() +''+(datetime.getUTCMonth()+1)+'0'+datetime.getUTCDate()
+  var datetime = new Date("2016-07-04T08:15:01")
+  var dateString = datetime.getUTCFullYear() +'0'+(datetime.getUTCMonth()+1)+'0'+datetime.getUTCDate()
   datetime.setUTCMinutes(datetime.getUTCMinutes() + index*10)
-  var timeString = datetime.getUTCHours()+''+datetime.getUTCMinutes()+'01'
+  var timeString = '0'+datetime.getUTCHours()+''+datetime.getUTCMinutes()+'01'
   index = index + 1
   var urlDate = dateString + 'T' + timeString + 'Z'
-  var url = "http://dev.hsl.fi/tmp/citybikes/stations_"+urlDate
+  //var url = "http://dev.hsl.fi/tmp/citybikes/stations_"+urlDate
+  var url = "http://juhapekm.users.cs.helsinki.fi/citybikes/stations_"+urlDate
   console.log(url)
   request({
       url: url,
