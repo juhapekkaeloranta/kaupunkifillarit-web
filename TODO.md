@@ -1,3 +1,3 @@
 ### TODO / IDEAS
 
-Javascript date formatter
+Live refresh
