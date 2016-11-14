@@ -16,6 +16,7 @@ const graphQLClient = new Lokka({
   transport: new Transport(HSL_GRAPHQL_URL)
 })
 var request = require("request")
+var strftime = require('strftime')
 
 var index = 1
 
@@ -73,18 +74,13 @@ function startStationSaving() {
   }
 }
 
+
 /**
 *
-* params: date YYYYMMDD, time HHMMSS
+* params: date YYYYMMDDTHHMMSSZ
 */
-function getOldStationInfo() {
-  var datetime = new Date("2016-07-04T08:15:01")
-  var dateString = datetime.getUTCFullYear() +'0'+(datetime.getUTCMonth()+1)+'0'+datetime.getUTCDate()
-  datetime.setUTCMinutes(datetime.getUTCMinutes() + index*10)
-  var timeString = '0'+datetime.getUTCHours()+''+datetime.getUTCMinutes()+'01'
-  index = index + 1
-  var urlDate = dateString + 'T' + timeString + 'Z'
-  //var url = "http://dev.hsl.fi/tmp/citybikes/stations_"+urlDate
+function getOldStationInfo(date) {
+  var urlDate = strftime('%Y%m%dT%H%M01Z', date);
   var url = "http://juhapekm.users.cs.helsinki.fi/citybikes/stations_"+urlDate
   console.log(url)
   request({
@@ -123,13 +119,25 @@ function testObjectStuff() {
 
 }
 
+var i = 1;
+function repeatedStationInfoGetter() {
+  var initDate = new Date("2016-07-04T08:15:01")
+  var deltaMillisec = 10*60*1000;
+  getOldStationInfo(new Date(initDate.getTime() + deltaMillisec*i));
+  i = i+1;
+}
+
 const port = process.env.PORT || 3001
 app.listen(port, () => {
   console.log(`Kaupunkifillarit.fi listening on *:${port}`)
   //setInterval(refreshStationCache, 10 * 1000)
   //refreshStationCache()
   //startStationSaving()
-  getOldStationInfo()
+
+  //getOldStationInfo()
+  setInterval(repeatedStationInfoGetter, 2 * 1000);
+  console.log('done!');
+
 
   //setInterval(getOldStationInfo, 2000)
   //testObjectStuff()
