@@ -6,6 +6,14 @@ Application for viewing citybike station history on given date and time.
 
 Forked from https://github.com/sampsakuronen/kaupunkifillarit-web
 
+## Development
+
+```
+nvm install
+npm install
+npm start / npm run watch
+```
+
 ## Licence
 
 The MIT License (MIT)
