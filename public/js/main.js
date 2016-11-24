@@ -78,32 +78,7 @@ function createStation(stationObject) {
   createStationMarker(bikesAvailable, totalSpaces)
 }
 
-function setLabelColorColorful(fillRate) {
-  if (fillRate<10) {
-    var labelColor = '#E80101'
-  } else if (fillRate<20) {
-    var labelColor = '#E13701'
-  } else if (fillRate<30) {
-    var labelColor = '#DA6901'
-  } else if (fillRate<40) {
-    var labelColor = '#FFB805'
-  } else if (fillRate<50) {
-    var labelColor = '#FDF31C'
-  } else if (fillRate<60) {
-    var labelColor = '#A1C700'
-  } else if (fillRate<70) {
-    var labelColor = '#6EC000'
-  } else if (fillRate<80) {
-    var labelColor = '#3EBA00'
-  } else if (fillRate<90) {
-    var labelColor = '#10B300'
-  } else if (fillRate<100) {
-    var labelColor = '#00AD18'
-  } else {
-    var labelColor = '#00AD18'
-  }
-  return labelColor;
-}
+
 
 function setLabelColorThreeTone(fillRate) {
   if (fillRate > 90) {
