@@ -10,8 +10,11 @@ const port = process.env.PORT || 3001
 
 app.disable('x-powered-by')
 app.use(compress())
-app.use(express.static('./public', {maxAge: 30 * 60 * 1000}))
+app.use(express.static('./public', {maxAge: 10 * 60 * 1000}))
 
+/*
+* Define response for frontend request "get('/api/station')"
+*/
 app.get('/api/stations', (req, res) => {
   res.setHeader('Cache-Control', 'public, max-age=10')
   res.send(stationDataByMoment)

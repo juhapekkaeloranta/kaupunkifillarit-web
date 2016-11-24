@@ -1,5 +1,5 @@
 var map = null
-var markers = []
+var markers = new Map();
 var locationMarker = null
 var headingMarker = null
 var pannedThisSession = false
@@ -48,42 +48,47 @@ function initializeGoogleMaps() {
 }
 
 function createStation(stationObject) {
-  function createStationMarker(bikesAvailable, totalSpaces) {
-    var labelContent = '<div class="count">' + bikesAvailable + ' / ' + totalSpaces + '</div>'
-    //var labelColor = bikesAvailable >= 2 ? '#FCBC19' : '#D4D4D4'
-    var fillRate = (Math.floor(((1-(totalSpaces-bikesAvailable)/totalSpaces))*10))*10
-
-    var labelColor = setLabelColorThreeTone(fillRate)
-
-    var stationMarker = new MarkerWithLabel({
-      position: new google.maps.LatLng(stationObject.lat, stationObject.lon),
-      map: map,
-      icon: {
-          path: 'M1.0658141e-14,-54 C-11.0283582,-54 -20,-44.5228029 -20,-32.873781 C-20,-19.2421314 -1.49104478,-1.30230657 -0.703731343,-0.612525547 L-0.00447761194,-7.10542736e-15 L0.697761194,-0.608583942 C1.48656716,-1.29048175 20,-19.0458394 20,-32.873781 C20,-44.5228029 11.0276119,-54 1.0658141e-14,-54 L1.0658141e-14,-54 Z',
-          fillColor: labelColor,
-        fillOpacity: 0.5,
-        scale: 1.1,
-        strokeWeight: 1
-      },
-      labelAnchor: new google.maps.Point(20, 43),
-      labelContent: labelContent
-    })
-
-    markers.push(stationMarker)
-  }
+  var stationMarker = createBlankMarker(stationObject.lat, stationObject.lon)
 
   var spacesAvailable = parseInt(stationObject.spacesAvailable)
   var bikesAvailable = parseInt(stationObject.bikesAvailable)
   var totalSpaces = spacesAvailable + bikesAvailable
-  createStationMarker(bikesAvailable, totalSpaces)
+
+  markers.set(stationObject.id, setStationMarkerContent(stationMarker, bikesAvailable, totalSpaces))
 }
 
+function setStationMarkerContent(marker, bikesAvailable, totalSpaces) {
+  var labelContent = '<div class="count">' + bikesAvailable + ' / ' + totalSpaces + '</div>'
+  var labelColor = setLabelColorThreeTone(bikesAvailable, totalSpaces)
 
+  marker.icon.fillColor = labelColor
+  marker.icon.fillOpacity = 0.5
+  marker.labelContent = labelContent
 
-function setLabelColorThreeTone(fillRate) {
-  if (fillRate > 90) {
+  return marker
+}
+
+function createBlankMarker(lat, lon) {
+  var marker = new MarkerWithLabel({
+    position: new google.maps.LatLng(lat, lon),
+    map: map,
+    icon: {
+      path: 'M1.0658141e-14,-54 C-11.0283582,-54 -20,-44.5228029 -20,-32.873781 C-20,-19.2421314 -1.49104478,-1.30230657 -0.703731343,-0.612525547 L-0.00447761194,-7.10542736e-15 L0.697761194,-0.608583942 C1.48656716,-1.29048175 20,-19.0458394 20,-32.873781 C20,-44.5228029 11.0276119,-54 1.0658141e-14,-54 L1.0658141e-14,-54 Z',
+      fillOpacity: 0.5,
+      scale: 1.1,
+      strokeWeight: 1
+    },
+    labelAnchor: new google.maps.Point(20, 43),
+
+  })
+  return marker
+}
+
+function setLabelColorThreeTone(bikesAvailable, totalSpaces) {
+  var fillRate = (Math.floor(((1-(totalSpaces-bikesAvailable)/totalSpaces))*10))*10
+  if (fillRate > 80) {
     var labelColor = '#ff704d'
-  } else if (fillRate < 10) {
+  } else if (fillRate < 10 || bikesAvailable < 3) {
     var labelColor = '#80ccff'
   } else {
     labelColor = '#ccffcc'
@@ -215,9 +220,17 @@ function initializeApp() {
 
   initializeGoogleMaps()
 
+  //initializeMarkers()
+}
+
+function initializeMarkers() {
   getJSON('/api/stations', function(data) {
     data.bikeRentalStations.map(createStation)
   })
+}
+
+function testLogger(message) {
+  console.log(message)
 }
 
 function ready(fn) {
@@ -227,4 +240,8 @@ function ready(fn) {
     document.addEventListener('DOMContentLoaded', fn)
   }
 }
+
+
+
 ready(initializeApp)
+ready(initializeMarkers)
