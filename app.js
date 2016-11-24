@@ -17,7 +17,12 @@ app.get('/api/stations', (req, res) => {
   res.send(stationDataByMoment)
 })
 
-/** Get data of stations by datetime
+/**
+* Get data of stations by datetime
+*
+* Fetches json containing data from all the stations at given datetime
+* Converts json format
+* Saves results to global varible "stationDataByMoment"
 *
 * params: datetime "2016-07-04T08:15:01"
 */
@@ -30,28 +35,48 @@ function getStationDataFromServer(date) {
       json: true
   }, function (error, response, body) {
       if (!error && response.statusCode === 200) {
-          var stationIndexArray = (Object.keys(body['result'])); // Print the json response
+          var stationIndexArray = numberOfRecordsInJson(body, 'result');
           var stationObjectArray = [];
           stationIndexArray.forEach(function(value) {
-            //console.log(body['result'][value])
             stationObjectArray.push(body['result'][value]);
           });
           var stationObjectQueryTypeArray = [];
           stationObjectArray.forEach(function(stationObject) {
-            var stationObjectQueryType =(
-              {id: stationObject['name'],
-              name: stationObject['name'].substring(4),
-              lat: parseFloat(stationObject['coordinates'].split(",")[0]),
-              lon: parseFloat(stationObject['coordinates'].split(",")[1]),
-              bikesAvailable: stationObject['avl_bikes'],
-              spacesAvailable: stationObject['free_slots']}
-            );
-            stationObjectQueryTypeArray.push(stationObjectQueryType)
+            stationObjectQueryTypeArray.push(reformatStationJson(stationObject))
           });
           var result = {bikeRentalStations: stationObjectQueryTypeArray}
           stationDataByMoment = result;
       }
   })
+}
+/**
+* Get number of records in a json
+*
+* For example this json:
+* {"employees":[
+*   {"firstName":"John", "lastName":"Doe"},
+*   {"firstName":"Anna", "lastName":"Smith"},
+*   {"firstName":"Peter", "lastName":"Jones"}
+* ]}
+* has key "employees" and 3 records
+*/
+function numberOfRecordsInJson(jsonObject, key) {
+  return Object.keys(jsonObject[key]);
+}
+
+/**
+* Reformat stationData json because live data is different than history data
+*/
+function reformatStationJson(stationObject) {
+  var stationObjectQueryType =(
+    {id: stationObject['name'],
+    name: stationObject['name'].substring(4),
+    lat: parseFloat(stationObject['coordinates'].split(",")[0]),
+    lon: parseFloat(stationObject['coordinates'].split(",")[1]),
+    bikesAvailable: stationObject['avl_bikes'],
+    spacesAvailable: stationObject['free_slots']}
+  );
+  return stationObjectQueryType;
 }
 
 /* Gets data of stations repeatedly
